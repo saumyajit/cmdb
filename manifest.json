@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2.0,
+    "id": "zabbix-cmdb",
+    "name": "Zabbix CMDB",
+    "author": "Saumyajit Pramanik",
+    "url": "https://www.zabbix.com/",
+    "version": "1.0",
+    "namespace": "ZabbixCmdb",
+    "description": "CMDB for Zabbix Hosts",
+    "actions": {
+        "cmdb": {
+            "class": "Cmdb",
+            "view": "cmdb"
+        },
+        "cmdb.groups": {
+            "class": "CmdbGroups",
+            "view": "cmdb.groups"
+        },
+        "cmdb.debug": {
+            "class": "CmdbDebug"
+        }
+    }
+}
