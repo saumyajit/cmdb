@@ -54,6 +54,18 @@ class CmdbGroups extends CController {
             'sortorder' => 'ASC'
         ]);
 
+     	// Filter groups that start with CUSTOMER/, PRODUCT/, or TYPE/
+		$filteredGroups = [];
+		foreach ($hostGroups as $group) {
+			$name = $group['name'];
+			if (strpos($name, 'CUSTOMER/') === 0 || 
+				strpos($name, 'PRODUCT/') === 0 || 
+				strpos($name, 'TYPE/') === 0) {
+				$filteredGroups[] = $group;
+			}
+		}
+		$hostGroups = $filteredGroups;
+        
         // Filter groups if a search term is provided
         if (!empty($search)) {
             $hostGroups = array_filter($hostGroups, function($group) use ($search) {
