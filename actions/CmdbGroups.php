@@ -54,7 +54,7 @@ class CmdbGroups extends CController {
             'sortorder' => 'ASC'
         ]);
 
-     	// Filter groups that start with CUSTOMER/, PRODUCT/, or TYPE/
+     	// Filtering groups that start with CUSTOMER/, PRODUCT/, or TYPE/
 		$filteredGroups = [];
 		foreach ($hostGroups as $group) {
 			$name = $group['name'];
