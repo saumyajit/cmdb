@@ -1,14 +1,24 @@
-# Zabbix CMDB Module
+<div align="center">
 
-## ✨ Version Compatibility
+# CMDB - Zabbix Module
 
-This module is compatible with Zabbix 6.0 and 7.0+ versions.
+</div>
 
-- ✅ Zabbix 6.0.x
-- ✅ Zabbix 7.0.x
-- ✅ Zabbix 7.4.x
+<div align="center">
 
-**Compatibility Note**: The module includes intelligent version detection that automatically adapts to different Zabbix API versions and class libraries, requiring no manual configuration.
+![Version](https://img.shields.io/badge/version-2.0-blue.svg)
+![Zabbix](https://img.shields.io/badge/zabbix-6.0%2B-red.svg)
+![PHP](https://img.shields.io/badge/php-8.0%2B-purple.svg)
+![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
+![Status](https://img.shields.io/badge/status-production-brightgreen.svg)
+
+**Configuration Management Database for Zabbix Hosts**
+
+[Features](#-features) • [Installation](#-installation) • [Documentation](#-usage) • [Support](#-support)
+
+---
+
+</div>
 
 ## Description
 
