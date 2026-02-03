@@ -18,6 +18,9 @@
         },
         "cmdb.debug": {
             "class": "CmdbDebug"
+        },
+        "cmdb.export": {
+            "class": "CmdbExport"
         }
     }
 }
