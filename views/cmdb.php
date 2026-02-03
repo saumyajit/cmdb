@@ -230,7 +230,7 @@ $styleTag = new CTag('style', true, '
 }
 
 .stat-content {
-    text-align: right;
+    text-align: center;
     flex: 1;
 }
 
