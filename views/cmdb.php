@@ -447,27 +447,33 @@ $styleTag = new CTag('style', true, '
 /* Column width controls */
 .hosts-table thead th:nth-child(1) { width: 180px; } /* Host Name */
 .hosts-table thead th:nth-child(2) { width: 70px; } /* IP Address */
-.hosts-table thead th:nth-child(3) { width: 40px; }  /* Architecture */
-.hosts-table thead th:nth-child(4) { width: 80px; } /* Interface Type */
-.hosts-table thead th:nth-child(5) { width: 55px; }  /* CPU Total */
-.hosts-table thead th:nth-child(6) { width: 55px; }  /* CPU Usage */
-.hosts-table thead th:nth-child(7) { width: 70px; } /* Memory Total */
-.hosts-table thead th:nth-child(8) { width: 78px; } /* Memory Usage */
-.hosts-table thead th:nth-child(9) { width: 200px; } /* Disk Usage */
-.hosts-table thead th:nth-child(10) { width: 180px; } /* Operating System */
-.hosts-table thead th:nth-child(11) { width: 180px; } /* Host Group */
+.hosts-table thead th:nth-child(3) { width: 120px; } /* Customer */
+.hosts-table thead th:nth-child(4) { width: 75px; } /* Product */
+.hosts-table thead th:nth-child(5) { width: 40px; }  /* Architecture */
+.hosts-table thead th:nth-child(6) { width: 80px; } /* Interface Type */
+.hosts-table thead th:nth-child(7) { width: 55px; }  /* CPU Total */
+.hosts-table thead th:nth-child(8) { width: 55px; }  /* CPU Usage */
+.hosts-table thead th:nth-child(9) { width: 70px; } /* Memory Total */
+.hosts-table thead th:nth-child(10) { width: 78px; } /* Memory Usage */
+.hosts-table thead th:nth-child(11) { width: 200px; } /* Disk Usage */
+.hosts-table thead th:nth-child(12) { width: 180px; } /* Operating System */
+.hosts-table thead th:nth-child(13) { width: 180px; } /* Host Group */
+
 
 .hosts-table tbody td:nth-child(1) { width: 180px; }
 .hosts-table tbody td:nth-child(2) { width: 70px; }
-.hosts-table tbody td:nth-child(3) { width: 40px; }
-.hosts-table tbody td:nth-child(4) { width: 80px; }
-.hosts-table tbody td:nth-child(5) { width: 55px; }
-.hosts-table tbody td:nth-child(6) { width: 55px; }
-.hosts-table tbody td:nth-child(7) { width: 70px; }
-.hosts-table tbody td:nth-child(8) { width: 78px; }
-.hosts-table tbody td:nth-child(9) { width: 200px; }
-.hosts-table tbody td:nth-child(10) { width: 180px; }
-.hosts-table tbody td:nth-child(11) { width: 180px; }
+.hosts-table tbody td:nth-child(3) { width: 120px; }
+.hosts-table tbody td:nth-child(4) { width: 75px; }
+.hosts-table tbody td:nth-child(5) { width: 40px; }
+.hosts-table tbody td:nth-child(6) { width: 80px; }
+.hosts-table tbody td:nth-child(7) { width: 55px; }
+.hosts-table tbody td:nth-child(8) { width: 55px; }
+.hosts-table tbody td:nth-child(9) { width: 70px; }
+.hosts-table tbody td:nth-child(10) { width: 70px; }
+.hosts-table tbody td:nth-child(11) { width: 200px; }
+.hosts-table tbody td:nth-child(12) { width: 200px; }
+.hosts-table tbody td:nth-child(13) { width: 180px; }
+
 
 ');
 
@@ -648,6 +654,8 @@ $header = [
     createSortLink(LanguageManager::t('Host Name'), 'name', $data),
 //  createSortLink(LanguageManager::t('System Name'), 'system_name', $data),
     createSortLink(LanguageManager::t('IP Address'), 'ip', $data),
+	createSortLink(LanguageManager::t('Customer'), 'customer', $data),
+	createSortLink(LanguageManager::t('Product'), 'product', $data),
     createSortLink(LanguageManager::t('Arch'), 'os_architecture', $data),
     LanguageManager::t('Interface Type'),
     createSortLink(LanguageManager::t('CPU Total'), 'cpu_total', $data),
@@ -665,7 +673,7 @@ if (empty($data['hosts'])) {
     $table->addRow([
         (new CCol(LanguageManager::t('No hosts found')))
             ->addClass('no-data')
-            ->setAttribute('colspan', 12)
+            ->setAttribute('colspan', 14)
     ]);
 } else {
     // Add host data rows
@@ -741,6 +749,28 @@ if (empty($data['hosts'])) {
         $ipCol = new CCol(
             (new CSpan(htmlspecialchars($mainIp)))->addClass('code-display')->setAttribute('style', 'display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; max-height: 3.8em;')
         );
+
+		// Customer Info
+		$customerCol = new CCol();
+		if (isset($host['customer']) && $host['customer'] !== '-' && $host['customer'] !== null) {
+			$customerCol->addItem(
+				(new CSpan(htmlspecialchars($host['customer'])))
+					->setAttribute('style', 'font-size: 13px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; max-height: 3.8em;')
+			);
+		} else {
+			$customerCol->addItem((new CSpan('-'))->setAttribute('style', 'color: #6c757d;'));
+		}
+		
+		// Product Info
+		$productCol = new CCol();
+		if (isset($host['product']) && $host['product'] !== '-' && $host['product'] !== null) {
+			$productCol->addItem(
+				(new CSpan(htmlspecialchars($host['product'])))
+					->setAttribute('style', 'font-size: 13px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; max-height: 3.8em;')
+			);
+		} else {
+			$productCol->addItem((new CSpan('-'))->setAttribute('style', 'color: #6c757d;'));
+		}
 
         // Architecture
         $archCol = new CCol();
@@ -917,6 +947,8 @@ if (empty($data['hosts'])) {
             $hostNameCol,
 //          $systemNameCol,
             $ipCol,
+			$customerCol,
+			$productCol,
             $archCol,
             $interfaceCol,
             $cpuCol,
