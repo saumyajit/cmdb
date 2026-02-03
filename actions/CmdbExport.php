@@ -5,6 +5,10 @@ namespace Modules\ZabbixCmdb\Actions;
 use CController;
 use CControllerResponseData;
 use API;
+
+require_once dirname(__DIR__) . '/lib/LanguageManager.php';
+require_once dirname(__DIR__) . '/lib/ItemFinder.php';
+use Modules\ZabbixCmdb\Lib\LanguageManager;
 use Modules\ZabbixCmdb\Lib\ItemFinder;
 
 class CmdbExport extends CController {
