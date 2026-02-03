@@ -75,6 +75,8 @@ class LanguageManager {
             'CPU Usage' => 'CPU Usage',
             'Memory Total' => 'Memory Total',
             'Memory Usage' => 'Memory Usage',
+			'Storage Total' => 'Storage Total',
+			'Disk Usage' => 'Disk Usage',
             'Host Group' => 'Host Group',
             'System Name' => 'System Name',
             'Architecture' => 'Architecture',
