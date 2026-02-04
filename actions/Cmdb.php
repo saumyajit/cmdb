@@ -53,7 +53,7 @@ class Cmdb extends CController {
 
         // Retrieve host group list – based on Zabbix 7.0 API documentation best practices
         $hostGroups = [];
-        
+
         // Try multiple strategies to retrieve host groups to ensure compatibility
         $strategies = [
             // Strategy 1: Retrieve groups that contain hosts (recommended, better performance)
@@ -65,7 +65,7 @@ class Cmdb extends CController {
                     'sortorder' => 'ASC'
                 ]);
             },
-            
+
             // Strategy 2: Standard retrieval of all groups
             function() {
                 return API::HostGroup()->get([
@@ -74,7 +74,7 @@ class Cmdb extends CController {
                     'sortorder' => 'ASC'
                 ]);
             },
-            
+
             // Strategy 3: Use extended output (required by some versions)
             function() {
                 $groups = API::HostGroup()->get([
@@ -89,7 +89,7 @@ class Cmdb extends CController {
                     ];
                 }, $groups);
             },
-            
+
             // Strategy 4: Retrieve groups indirectly via hosts (last compatibility option)
             function() {
                 $hosts = API::Host()->get([
@@ -97,7 +97,7 @@ class Cmdb extends CController {
                     'selectHostGroups' => ['groupid', 'name'],
                     'limit' => 1000
                 ]);
-                
+
                 $groupsMap = [];
                 foreach ($hosts as $host) {
                     if (isset($host['groups'])) {
@@ -109,16 +109,16 @@ class Cmdb extends CController {
                         }
                     }
                 }
-                
+
                 $groups = array_values($groupsMap);
                 usort($groups, function($a, $b) {
                     return strcasecmp($a['name'], $b['name']);
                 });
-                
+
                 return $groups;
             }
         ];
-        
+
         // Execute strategies in order until successful host groups are retrieved
         foreach ($strategies as $index => $strategy) {
             try {
@@ -131,36 +131,42 @@ class Cmdb extends CController {
                 continue;
             }
         }
-        
+
         // If all strategies fail, log the error but do not interrupt execution
         if (empty($hostGroups)) {
             error_log("CMDB: All host group retrieval strategies failed");
         }
 
-		// Filtering groups that start with CUSTOMER/, PRODUCT/, or TYPE/
-		$filteredHostGroups = [];
-		foreach ($hostGroups as $group) {
-			$name = $group['name'];
-			if (strpos($name, 'CUSTOMER/') === 0 || 
-				strpos($name, 'PRODUCT/') === 0 || 
-				strpos($name, 'TYPE/') === 0) {
-				$filteredHostGroups[] = $group;
-			}
-		}
-		$hostGroups = $filteredHostGroups;
-		
-        // Retrieve host list – optimized according to Zabbix 7.0 API documentation
-        if (!empty($search)) {
+        // Filtering groups that start with CUSTOMER/, PRODUCT/, or TYPE/
+        $filteredHostGroups = [];
+        foreach ($hostGroups as $group) {
+            $name = $group['name'];
+            if (strpos($name, 'CUSTOMER/') === 0 ||
+                strpos($name, 'PRODUCT/') === 0 ||
+                strpos($name, 'TYPE/') === 0) {
+                $filteredHostGroups[] = $group;
+            }
+        }
+        $hostGroups = $filteredHostGroups;
+
+		// Retrieve host list – optimized according to Zabbix 7.0 API documentation
+        // NEW: Only load data if at least one filter is applied
+        $hasFilter = !empty($search) || $groupid > 0 || $interface_type > 0;
+
+        if (!$hasFilter) {
+            // No filter selected - don't load any data
+            $hosts = [];
+        } elseif (!empty($search)) {
             // Search strategy: supports fuzzy search by hostname, visible name, and IP address
             $allFoundHosts = [];
-            
-            // Step 1: Search hosts by hostname and visible name*
+
+            // Step 1: Search hosts by hostname and visible name
             try {
                 $nameSearchParams = [
                     'output' => ['hostid', 'host', 'name', 'status', 'maintenance_status', 'maintenance_type', 'maintenanceid'],
                     'selectHostGroups' => ['groupid', 'name'],
                     'selectInterfaces' => ['interfaceid', 'ip', 'dns', 'type', 'main', 'available', 'error'],
-					'selectInventory' => ['contact', 'type_full'],
+                    'selectInventory' => ['contact', 'type_full'],
                     'search' => [
                         'host' => '*' . $search . '*',
                         'name' => '*' . $search . '*'
@@ -170,19 +176,21 @@ class Cmdb extends CController {
                     'sortfield' => 'host',
                     'sortorder' => 'ASC',
                     'limit' => 1000
-                ];                if ($groupid > 0) {
+                ];
+
+                if ($groupid > 0) {
                     $nameSearchParams['groupids'] = [$groupid];
                 }
-                
+
                 $nameHosts = API::Host()->get($nameSearchParams);
-                
+
                 foreach ($nameHosts as $host) {
                     $allFoundHosts[$host['hostid']] = $host;
                 }
             } catch (Exception $e) {
                 error_log("Name search failed: " . $e->getMessage());
             }
-            
+
             // Step 2: If the search term contains digits, search by IP or DNS
             if (preg_match('/\d/', $search)) {
                 try {
@@ -196,26 +204,26 @@ class Cmdb extends CController {
                         'searchWildcardsEnabled' => true,
                         'searchByAny' => true
                     ]);
-                    
+
                     if (!empty($interfaces)) {
                         $hostIds = array_unique(array_column($interfaces, 'hostid'));
-                        
+
                         $ipSearchParams = [
                             'output' => ['hostid', 'host', 'name', 'status', 'maintenance_status', 'maintenance_type', 'maintenanceid'],
                             'selectHostGroups' => ['groupid', 'name'],
                             'selectInterfaces' => ['interfaceid', 'ip', 'dns', 'type', 'main', 'available', 'error'],
-							'selectInventory' => ['contact', 'type_full'],
+                            'selectInventory' => ['contact', 'type_full'],
                             'hostids' => $hostIds,
                             'sortfield' => 'host',
                             'sortorder' => 'ASC'
                         ];
-                        
+
                         if ($groupid > 0) {
                             $ipSearchParams['groupids'] = [$groupid];
                         }
-                        
+
                         $ipHosts = API::Host()->get($ipSearchParams);
-                        
+
                         foreach ($ipHosts as $host) {
                             $allFoundHosts[$host['hostid']] = $host;
                         }
@@ -224,24 +232,24 @@ class Cmdb extends CController {
                     error_log("IP search failed: " . $e->getMessage());
                 }
             }
-            
+
             $hosts = array_values($allFoundHosts);
         } else {
-            // When there is no search condition, retrieve all hosts
+            // When groupid or interface_type filter is selected (but no search term)
             $hostParams = [
                 'output' => ['hostid', 'host', 'name', 'status', 'maintenance_status', 'maintenance_type', 'maintenanceid'],
                 'selectHostGroups' => ['groupid', 'name'],
                 'selectInterfaces' => ['interfaceid', 'ip', 'dns', 'type', 'main', 'available', 'error'],
-				'selectInventory' => ['contact', 'type_full'],
+                'selectInventory' => ['contact', 'type_full'],
                 'sortfield' => 'host',
                 'sortorder' => 'ASC',
                 'limit' => 1000
             ];
-            
+
             if ($groupid > 0) {
                 $hostParams['groupids'] = [$groupid];
             }
-            
+
             try {
                 $hosts = API::Host()->get($hostParams);
             } catch (Exception $e) {
@@ -270,18 +278,18 @@ class Cmdb extends CController {
         $hostData = [];
         $totalCpu = 0;
         $totalMemory = 0;
-		$totalStorage = 0;
-		
+        $totalStorage = 0;
+
         // Filtering out hosts with URL/PUBLIC URL in their names
-		$filteredHosts = [];
-		foreach ($hosts as $host) {
-			$hostName = strtoupper($host['name']);
-			if (strpos($hostName, 'URL') === false && strpos($hostName, 'PUBLIC URL') === false) {
-				$filteredHosts[] = $host;
-			}
-		}
-		$hosts = $filteredHosts;
-        
+        $filteredHosts = [];
+        foreach ($hosts as $host) {
+            $hostName = strtoupper($host['name']);
+            if (strpos($hostName, 'URL') === false && strpos($hostName, 'PUBLIC URL') === false) {
+                $filteredHosts[] = $host;
+            }
+        }
+        $hosts = $filteredHosts;
+
         foreach ($hosts as $host) {
             $hostInfo = [
                 'hostid' => $host['hostid'],
@@ -297,23 +305,23 @@ class Cmdb extends CController {
                 'memory_total' => '-',
                 'memory_usage' => '-',
                 'kernel_version' => '-',
-				'customer' => '-',
-				'product' => '-'
+                'customer' => '-',
+                'product' => '-'
             ];
 
             // Get the actual availability status of the host
             $availability = ItemFinder::getHostAvailabilityStatus($host['hostid'], $host['interfaces']);
             $hostInfo['availability'] = $availability;
 
-			// Extract Inventory data for Customer & Product
-			if (isset($host['inventory']) && is_array($host['inventory'])) {
-				if (isset($host['inventory']['contact']) && !empty($host['inventory']['contact'])) {
-					$hostInfo['customer'] = $host['inventory']['contact'];
-				}
-				if (isset($host['inventory']['type_full']) && !empty($host['inventory']['type_full'])) {
-					$hostInfo['product'] = $host['inventory']['type_full'];
-				}
-			}
+            // Extract Inventory data for Customer & Product
+            if (isset($host['inventory']) && is_array($host['inventory'])) {
+                if (isset($host['inventory']['contact']) && !empty($host['inventory']['contact'])) {
+                    $hostInfo['customer'] = $host['inventory']['contact'];
+                }
+                if (isset($host['inventory']['type_full']) && !empty($host['inventory']['type_full'])) {
+                    $hostInfo['product'] = $host['inventory']['type_full'];
+                }
+            }
 
             // Get total CPU count
             $cpuResult = ItemFinder::findCpuCount($host['hostid']);
@@ -343,23 +351,23 @@ class Cmdb extends CController {
             if ($memoryResult && $memoryResult['value'] !== null) {
                 $hostInfo['memory_total'] = ItemFinder::formatMemorySize($memoryResult['value']);
             }
-			
-			// Get total storage
-			$storageTotal = ItemFinder::findStorageTotal($host['hostid']);
-			if ($storageTotal !== null) {
-				$hostInfo['storage_total'] = ItemFinder::formatMemorySize($storageTotal);
-				$totalStorage += intval($storageTotal);
-			} else {
-				$hostInfo['storage_total'] = '-';
-			}
-			
-			// Get disk usage
-			$diskUsageResult = ItemFinder::findDiskUsage($host['hostid']);
-			if ($diskUsageResult !== null) {
-				$hostInfo['disk_usage'] = $diskUsageResult;
-			} else {
-				$hostInfo['disk_usage'] = [];
-			}
+
+            // Get total storage
+            $storageTotal = ItemFinder::findStorageTotal($host['hostid']);
+            if ($storageTotal !== null) {
+                $hostInfo['storage_total'] = ItemFinder::formatMemorySize($storageTotal);
+                $totalStorage += intval($storageTotal);
+            } else {
+                $hostInfo['storage_total'] = '-';
+            }
+
+            // Get disk usage
+            $diskUsageResult = ItemFinder::findDiskUsage($host['hostid']);
+            if ($diskUsageResult !== null) {
+                $hostInfo['disk_usage'] = $diskUsageResult;
+            } else {
+                $hostInfo['disk_usage'] = [];
+            }
 
             // Get kernel version
             $kernelResult = ItemFinder::findKernelVersion($host['hostid']);
@@ -387,7 +395,7 @@ class Cmdb extends CController {
 
             $hostData[] = $hostInfo;
         }
-        
+
         // Sort hosts according to selected field and order
         if (!empty($hostData)) {
             usort($hostData, function($a, $b) use ($sort, $sortorder) {
@@ -415,7 +423,7 @@ class Cmdb extends CController {
                 }
             });
         }
-        
+
         $response = new CControllerResponseData([
             'title' => LanguageManager::t('Configuration Management Database (CMDB) in Zabbix'),
             'host_groups' => $hostGroups,
@@ -429,7 +437,7 @@ class Cmdb extends CController {
             'total_memory' => $totalMemory,
             'total_storage' => $totalStorage
         ]);
-        
+
         // Explicitly set the response title (required for Zabbix 6.0)
         $response->setTitle(LanguageManager::t('Host List'));
 
