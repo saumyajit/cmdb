@@ -40,11 +40,12 @@ class Module extends ModuleBase {
                         ->findOrAdd(_('Inventory'))
                         ->getSubmenu()
                         ->add(
-                            (new CMenuItem($lm->t('CMDB')))->setSubMenu(
-                                new CMenu([
-                                    (new CMenuItem($lm->t('Host List')))->setAction('cmdb'),
-                                    (new CMenuItem($lm->t('Host Groups')))->setAction('cmdb.groups')
-                                ])
+                         // (new CMenuItem($lm->t('CMDB')))->setSubMenu(
+                            (new CMenuItem($lm->t('CMDB')))->setAction('cmdb')
+                         //     new CMenu([
+                         //         (new CMenuItem($lm->t('Host List')))->setAction('cmdb'),
+                         //         (new CMenuItem($lm->t('Host Groups')))->setAction('cmdb.groups')
+                         //     ])
                             )
                         );
                 }
