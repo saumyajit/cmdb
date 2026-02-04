@@ -47,18 +47,15 @@ The **Zabbix CMDB Module** is a comprehensive frontend module that provides Conf
   - Host group associations
   - Host status (Active/Disabled) with visual indicators
 
-- **Group Statistics**:
-  - Host count per group
-  - Total CPU and memory resources per group
-  - Quick overview of group composition
-
 ### 🌐 **Interface & Design**
-- **Internationalization**: Full support for English and Chinese interfaces
 - **Responsive Design**: Optimized for desktop and tablet screens
 - **Modern UI**: Clean interface with gradient colors and smooth animations
 - **Dashboard Statistics**: Real-time display of:
-  - Total hosts
+  - Total CPU
+  - Total Memory
+  - Total Storage allocated for Host
   - Total host groups
+  - Total hosts
   - Active hosts count
 
 ## 🚀 Installation
@@ -93,31 +90,23 @@ sed -i 's/"manifest_version": 2.0/"manifest_version": 1.0/' zabbix_cmdb/manifest
 1. Log into your Zabbix web interface
 2. Navigate to **Administration → General → Modules**
 3. Click **Scan directory** to detect new modules
-4. Find **"Zabbix CMDB"** in the module list
+4. Find **"CMDB Zabbix"** in the module list
 5. Click **Enable**
 6. Refresh your browser page
 
 ### Step 4: Access the Module
 
-After enabling, you'll find a new **CMDB** submenu under the **Inventory** main menu with two options:
-- **Host List** - View and search all hosts
-- **Host Groups** - View group statistics and filtering
+After enabling, you'll find a new **CMDB** submenu under the **Inventory** main menu:
 
 ## 📖 Usage Guide
 
 ### Navigating the CMDB
 
-1. **Host List View**:
+** View**:
    - Search hosts by name or IP
    - Filter by host groups using dropdown
    - Click host names to jump to detailed host configuration
    - View comprehensive host information in a single table
-
-2. **Host Groups View**:
-   - See statistics for all host groups
-   - Search specific groups by name
-   - View resource utilization per group
-   - Identify largest groups at a glance
 
 ### Best Practices
 
@@ -143,11 +132,9 @@ cmdb/
 ├── manifest.json           # Module configuration
 ├── Module.php              # Menu registration
 ├── actions/
-│ ├── Cmdb.php              # Host list business logic
-│ └── CmdbGroups.php        # Host groups business logic
+│ ├── Cmdb.php              # Business logic (Controller)
 ├── views/
-│ ├── cmdb.php              # Host list view
-│ └── cmdb_groups.php       # Host groups view
+│ ├── cmdb.php              # Views
 ├── lib/
 │ ├── LanguageManager.php   # Internationalization
 │ └── ItemFinder.php        # Utility functions
@@ -174,7 +161,7 @@ For complete license details, visit:
 
 ## 🤝 Support
 
-- **Issues**: Report bugs or issues on [GitHub Issues](https://github.com/saumyajit/zabbix_cmdb/issues)
+- **Issues**: Report bugs or issues on [GitHub Issues](https://github.com/saumyajit/cmdb/issues)
 - **Questions**: Check existing issues before creating new ones
 - **Enhancements**: Feature requests are welcome with clear use cases
 
@@ -184,7 +171,7 @@ For complete license details, visit:
 
 **Built with ❤️ for the Zabbix Community**
 
-[![Star](https://img.shields.io/github/stars/saumyajit/zabbix_cmdb?style=social)](https://github.com/saumyajit/zabbix_cmdb)
-[![Fork](https://img.shields.io/github/forks/saumyajit/zabbix_cmdb?style=social)](https://github.com/saumyajit/zabbix_cmdb/fork)
+[![Star](https://img.shields.io/github/stars/saumyajit/zabbix_cmdb?style=social)](https://github.com/saumyajit/cmdb)
+[![Fork](https://img.shields.io/github/forks/saumyajit/zabbix_cmdb?style=social)](https://github.com/saumyajit/cmdb/fork)
 
 </div>
