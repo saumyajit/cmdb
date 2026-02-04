@@ -758,6 +758,7 @@ $table->addClass('hosts-table');
 $header = [
     createSortLink(LanguageManager::t('Host Name'), 'name', $data),
 //  createSortLink(LanguageManager::t('System Name'), 'system_name', $data),
+	LanguageManager::t('Status'),
     createSortLink(LanguageManager::t('IP Address'), 'ip', $data),
 	createSortLink(LanguageManager::t('Customer'), 'customer', $data),
 	createSortLink(LanguageManager::t('Product'), 'product', $data),
@@ -769,8 +770,7 @@ $header = [
     createSortLink(LanguageManager::t('Memory Usage'), 'memory_usage', $data),
     LanguageManager::t('Disk Usage'),
     createSortLink(LanguageManager::t('Operating System'), 'operating_system', $data),
-    LanguageManager::t('Host Group'),
-	LanguageManager::t('Status')
+    LanguageManager::t('Host Group')	
 ];
 $table->setHeader($header);
 
