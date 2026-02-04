@@ -490,7 +490,7 @@ $styleTag = new CTag('style', true, '
 
 
 /* Column width controls */
-.hosts-table thead th:nth-child(1) { width: 180px; } /* Host Name */
+.hosts-table thead th:nth-child(1) { width: 150px; } /* Host Name */
 .hosts-table thead th:nth-child(2) { width: 50px; } /* Status */
 .hosts-table thead th:nth-child(3) { width: 70px; } /* IP Address */
 .hosts-table thead th:nth-child(4) { width: 120px; } /* Customer */
@@ -506,7 +506,7 @@ $styleTag = new CTag('style', true, '
 .hosts-table thead th:nth-child(14) { width: 180px; } /* Host Group */
 
 
-.hosts-table tbody td:nth-child(1) { width: 180px; }
+.hosts-table tbody td:nth-child(1) { width: 150px; }
 .hosts-table tbody td:nth-child(2) { width: 50px; }
 .hosts-table tbody td:nth-child(3) { width: 70px; }
 .hosts-table tbody td:nth-child(4) { width: 120px; }
