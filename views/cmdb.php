@@ -280,7 +280,7 @@ $styleTag = new CTag('style', true, '
     background-color: #fff;
     border: 1px solid #dee2e6;
     border-radius: 4px;
-    table-layout: fixed;
+    table-layout: auto;
     overflow: visible;
 }
 
@@ -293,9 +293,9 @@ $styleTag = new CTag('style', true, '
     font-size: 13px;
     border-bottom: 1px solid #dee2e6;
     max-width: 300px;
-    word-break: break-all;
+    word-break: normal;
     overflow-wrap: break-word;
-    white-space: normal;
+    white-space: nowrap;
     overflow: visible;
     min-height: 20px;
     line-height: 1.4;
@@ -307,7 +307,7 @@ $styleTag = new CTag('style', true, '
     font-size: 13px;
     vertical-align: top;
     max-width: 300px;
-    word-break: break-all;
+    word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
     overflow: hidden;
