@@ -476,7 +476,7 @@ $styleTag = new CTag('style', true, '
 
 .cmdb-title h1 {
     color: #ffffff;
-    font-size: 36px;
+    font-size: 28px;
 	font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
     font-weight: 600;
     margin: 0;
