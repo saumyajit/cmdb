@@ -279,6 +279,12 @@ class Cmdb extends CController {
         $totalCpu = 0;
         $totalMemory = 0;
         $totalStorage = 0;
+		$totalCpuUsage = 0;
+		$totalMemoryUsage = 0;
+		$totalStorageUsage = 0;
+		$hostsWithCpuUsage = 0;
+		$hostsWithMemoryUsage = 0;
+		$hostsWithStorageUsage = 0;
 
         // Filtering out hosts with URL/PUBLIC URL in their names
         $filteredHosts = [];
@@ -334,6 +340,9 @@ class Cmdb extends CController {
             $cpuUsageResult = ItemFinder::findCpuUsage($host['hostid']);
             if ($cpuUsageResult && $cpuUsageResult['value'] !== null) {
                 $hostInfo['cpu_usage'] = round(floatval($cpuUsageResult['value']), 2) . '%';
+				// Get Total CPU usage
+				$totalCpuUsage += floatval($cpuUsageResult['value']);
+				$hostsWithCpuUsage++;
             }
 
             // Get total memory
@@ -347,6 +356,9 @@ class Cmdb extends CController {
             $memoryUsageResult = ItemFinder::findMemoryUsage($host['hostid']);
             if ($memoryUsageResult && $memoryUsageResult['value'] !== null) {
                 $hostInfo['memory_usage'] = round(floatval($memoryUsageResult['value']), 2) . '%';
+				// Get Total Memory usage
+				$totalMemoryUsage += floatval($memoryUsageResult['value']);
+				$hostsWithMemoryUsage++;
             }
             if ($memoryResult && $memoryResult['value'] !== null) {
                 $hostInfo['memory_total'] = ItemFinder::formatMemorySize($memoryResult['value']);
@@ -361,13 +373,29 @@ class Cmdb extends CController {
                 $hostInfo['storage_total'] = '-';
             }
 
-            // Get disk usage
-            $diskUsageResult = ItemFinder::findDiskUsage($host['hostid']);
-            if ($diskUsageResult !== null) {
-                $hostInfo['disk_usage'] = $diskUsageResult;
-            } else {
-                $hostInfo['disk_usage'] = [];
-            }
+			// Get disk usage
+			$diskUsageResult = ItemFinder::findDiskUsage($host['hostid']);
+			if ($diskUsageResult !== null) {
+				$hostInfo['disk_usage'] = $diskUsageResult;
+				
+				// Calculate average storage usage for this host
+				if (!empty($diskUsageResult)) {
+					$totalPercentage = 0;
+					$diskCount = 0;
+					foreach ($diskUsageResult as $disk) {
+						$totalPercentage += floatval($disk['percentage']);
+						$diskCount++;
+					}
+					if ($diskCount > 0) {
+						$avgStorageUsage = $totalPercentage / $diskCount;
+						$totalStorageUsage += $avgStorageUsage;
+						$hostsWithStorageUsage++;
+					}
+				}
+			} else {
+				$hostInfo['disk_usage'] = [];
+			}
+
 
             // Get kernel version
             $kernelResult = ItemFinder::findKernelVersion($host['hostid']);
@@ -435,7 +463,10 @@ class Cmdb extends CController {
             'sortorder' => $sortorder,
             'total_cpu' => $totalCpu,
             'total_memory' => $totalMemory,
-            'total_storage' => $totalStorage
+            'total_storage' => $totalStorage,
+			'avg_cpu_usage' => $hostsWithCpuUsage > 0 ? round($totalCpuUsage / $hostsWithCpuUsage, 2) : 0,
+			'avg_memory_usage' => $hostsWithMemoryUsage > 0 ? round($totalMemoryUsage / $hostsWithMemoryUsage, 2) : 0,
+			'avg_storage_usage' => $hostsWithStorageUsage > 0 ? round($totalStorageUsage / $hostsWithStorageUsage, 2) : 0
         ]);
 
         // Explicitly set the response title (required for Zabbix 6.0)
