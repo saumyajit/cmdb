@@ -102,7 +102,7 @@ After enabling, you'll find a new **CMDB** submenu under the **Inventory** main 
 
 ### Navigating the CMDB
 
-** View**:
+  **View**:
    - Search hosts by name or IP
    - Filter by host groups using dropdown
    - Click host names to jump to detailed host configuration
