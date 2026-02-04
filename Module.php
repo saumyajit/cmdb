@@ -47,7 +47,7 @@ class Module extends ModuleBase {
                          //         (new CMenuItem($lm->t('Host Groups')))->setAction('cmdb.groups')
                          //     ])
                             )
-                        );
+                       // );
                 }
             }
         } catch (\Exception $e) {
