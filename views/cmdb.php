@@ -174,6 +174,7 @@ $styleTag = new CTag('style', true, '
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 14px;
+	font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
     transition: border-color 0.15s ease-in-out;
     background-color: #fff;
     height: 38px;
