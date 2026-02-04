@@ -136,7 +136,7 @@ cmdb/
 ├── views/
 │ ├── cmdb.php              # Views
 ├── lib/
-│ ├── LanguageManager.php   # Internationalization
+│ ├── LanguageManager.php   # Language support (English)
 │ └── ItemFinder.php        # Utility functions
 └── images/                 # Screenshots and assets
 ```
