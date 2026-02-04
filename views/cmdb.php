@@ -491,34 +491,35 @@ $styleTag = new CTag('style', true, '
 
 /* Column width controls */
 .hosts-table thead th:nth-child(1) { width: 180px; } /* Host Name */
-.hosts-table thead th:nth-child(2) { width: 70px; } /* IP Address */
-.hosts-table thead th:nth-child(3) { width: 120px; } /* Customer */
-.hosts-table thead th:nth-child(4) { width: 75px; } /* Product */
-.hosts-table thead th:nth-child(5) { width: 40px; }  /* Architecture */
-.hosts-table thead th:nth-child(6) { width: 80px; } /* Interface Type */
-.hosts-table thead th:nth-child(7) { width: 55px; }  /* CPU Total */
-.hosts-table thead th:nth-child(8) { width: 55px; }  /* CPU Usage */
-.hosts-table thead th:nth-child(9) { width: 70px; } /* Memory Total */
-.hosts-table thead th:nth-child(10) { width: 78px; } /* Memory Usage */
-.hosts-table thead th:nth-child(11) { width: 200px; } /* Disk Usage */
-.hosts-table thead th:nth-child(12) { width: 180px; } /* Operating System */
-.hosts-table thead th:nth-child(13) { width: 180px; } /* Host Group */
+.hosts-table thead th:nth-child(2) { width: 50px; } /* Status */
+.hosts-table thead th:nth-child(3) { width: 70px; } /* IP Address */
+.hosts-table thead th:nth-child(4) { width: 120px; } /* Customer */
+.hosts-table thead th:nth-child(5) { width: 75px; } /* Product */
+.hosts-table thead th:nth-child(6) { width: 40px; }  /* Architecture */
+.hosts-table thead th:nth-child(7) { width: 80px; } /* Interface Type */
+.hosts-table thead th:nth-child(8) { width: 55px; }  /* CPU Total */
+.hosts-table thead th:nth-child(9) { width: 55px; }  /* CPU Usage */
+.hosts-table thead th:nth-child(10) { width: 70px; } /* Memory Total */
+.hosts-table thead th:nth-child(11) { width: 78px; } /* Memory Usage */
+.hosts-table thead th:nth-child(12) { width: 200px; } /* Disk Usage */
+.hosts-table thead th:nth-child(13) { width: 180px; } /* Operating System */
+.hosts-table thead th:nth-child(14) { width: 180px; } /* Host Group */
 
 
 .hosts-table tbody td:nth-child(1) { width: 180px; }
-.hosts-table tbody td:nth-child(2) { width: 70px; }
-.hosts-table tbody td:nth-child(3) { width: 120px; }
-.hosts-table tbody td:nth-child(4) { width: 75px; }
-.hosts-table tbody td:nth-child(5) { width: 40px; }
-.hosts-table tbody td:nth-child(6) { width: 80px; }
-.hosts-table tbody td:nth-child(7) { width: 55px; }
+.hosts-table tbody td:nth-child(2) { width: 50px; }
+.hosts-table tbody td:nth-child(3) { width: 70px; }
+.hosts-table tbody td:nth-child(4) { width: 120px; }
+.hosts-table tbody td:nth-child(5) { width: 75px; }
+.hosts-table tbody td:nth-child(6) { width: 40px; }
+.hosts-table tbody td:nth-child(7) { width: 80px; }
 .hosts-table tbody td:nth-child(8) { width: 55px; }
-.hosts-table tbody td:nth-child(9) { width: 70px; }
+.hosts-table tbody td:nth-child(9) { width: 55px; }
 .hosts-table tbody td:nth-child(10) { width: 70px; }
-.hosts-table tbody td:nth-child(11) { width: 200px; }
+.hosts-table tbody td:nth-child(11) { width: 70px; }
 .hosts-table tbody td:nth-child(12) { width: 200px; }
-.hosts-table tbody td:nth-child(13) { width: 180px; }
-
+.hosts-table tbody td:nth-child(13) { width: 200px; }
+.hosts-table tbody td:nth-child(14) { width: 180px; }
 
 ');
 
@@ -768,7 +769,8 @@ $header = [
     createSortLink(LanguageManager::t('Memory Usage'), 'memory_usage', $data),
     LanguageManager::t('Disk Usage'),
     createSortLink(LanguageManager::t('Operating System'), 'operating_system', $data),
-    LanguageManager::t('Host Group')
+    LanguageManager::t('Host Group'),
+	LanguageManager::t('Status')
 ];
 $table->setHeader($header);
 
@@ -777,7 +779,7 @@ if (empty($data['hosts'])) {
     $table->addRow([
         (new CCol(LanguageManager::t('No hosts found')))
             ->addClass('no-data')
-            ->setAttribute('colspan', 14)
+            ->setAttribute('colspan', 15)
     ]);
 } else {
     // Add host data rows
@@ -826,18 +828,15 @@ if (empty($data['hosts'])) {
             $groupNames = array_column($host['groups'], 'name');
         }
 
-        // Host name and status
+        // Host Name
         $hostNameCol = new CCol();
         $hostNameCol->addItem(
             (new CLink(htmlspecialchars($host['name']), 'zabbix.php?action=host.view&hostid=' . $host['hostid']))
                 ->addClass('host-link')
         );
-        $hostNameCol->addItem(
-            (new CDiv())
-                ->addItem(
-                    getHostStatusDisplay($host)
-                )
-        );
+        // Host Status
+		$statusCol = new CCol();
+		$statusCol->addItem(getHostStatusDisplay($host));
 
         // System name
         $systemNameCol = new CCol();
@@ -1050,6 +1049,7 @@ if (empty($data['hosts'])) {
         $table->addRow([
             $hostNameCol,
 //          $systemNameCol,
+			$statusCol,
             $ipCol,
 			$customerCol,
 			$productCol,
