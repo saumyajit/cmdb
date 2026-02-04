@@ -162,6 +162,7 @@ $styleTag = new CTag('style', true, '
 
 .form-field label {
     font-weight: 600;
+	font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
     margin-bottom: 5px;
     color: #495057;
     font-size: 16px;
@@ -309,7 +310,7 @@ $styleTag = new CTag('style', true, '
     overflow: hidden;
     min-height: 20px;
     line-height: 1.4;
-    max-height: 55px; /* 3行文字高度 */
+    max-height: 55px; /* 3 lines of text height */
     position: relative;
 }
 
@@ -544,17 +545,17 @@ $content = (new CDiv())
                             ->addItem(
                                 (new CDiv())
                                     ->addClass('form-field')
-                                    ->addItem(new CLabel('🔍 ' . LanguageManager::t('Search by hostname or IP')))
+                                    ->addItem(new CLabel('🔍 ' . LanguageManager::t('Search by Hostname or IP')))
                                     ->addItem(
                                         (new CTextBox('search', $data['search']))
-                                            ->setAttribute('placeholder', LanguageManager::t('Search hosts...'))
+                                            ->setAttribute('placeholder', LanguageManager::t('Search Hosts...'))
                                             ->setAttribute('oninput', 'handleSearchInput(this)')
                                     )
                             )
                             ->addItem(
                                 (new CDiv())
                                     ->addClass('form-field')
-                                    ->addItem(new CLabel('📂 ' . LanguageManager::t('Select host group')))
+                                    ->addItem(new CLabel('📂 ' . LanguageManager::t('Select Host Group')))
                                     ->addItem((function() use ($data) {
                                         $select = new CTag('select', true);
                                         $select->setAttribute('name', 'groupid');
